@@ -31,32 +31,34 @@ export function CandidatesProvider({ children }: { children: ReactNode }) {
     }).catch(console.error);
 
     // Set up event listeners
-    wsService.on('INIT_CANDIDATES', (data: Candidate[]) => {
-      setCandidates(data);
+    wsService.on('INIT_CANDIDATES', (data) => {
+      setCandidates(data as Candidate[]);
     });
 
-    wsService.on('CANDIDATES_UPDATE', (data: Candidate[]) => {
-      setCandidates(data);
+    wsService.on('CANDIDATES_UPDATE', (data) => {
+      setCandidates(data as Candidate[]);
     });
 
-    wsService.on('CANDIDATE_ADDED', (data: Candidate) => {
-      setCandidates(prev => [...prev, data]);
+    wsService.on('CANDIDATE_ADDED', (data) => {
+      setCandidates(prev => [...prev, data as Candidate]);
     });
 
-    wsService.on('CANDIDATE_UPDATED', (data: Candidate) => {
+    wsService.on('CANDIDATE_UPDATED', (data) => {
+      const updatedCandidate = data as Candidate;
       setCandidates(prev => 
         prev.map(candidate => 
-          candidate.id === data.id ? data : candidate
+          candidate.id === updatedCandidate.id ? updatedCandidate : candidate
         )
       );
     });
 
-    wsService.on('CANDIDATE_DELETED', (data: { id: string }) => {
-      setCandidates(prev => prev.filter(candidate => candidate.id !== data.id));
+    wsService.on('CANDIDATE_DELETED', (data) => {
+      const { id } = data as { id: string };
+      setCandidates(prev => prev.filter(candidate => candidate.id !== id));
     });
 
-    wsService.on('CANDIDATE_GENERATED', (data: Candidate) => {
-      setCandidates(prev => [...prev, data]);
+    wsService.on('CANDIDATE_GENERATED', (data) => {
+      setCandidates(prev => [...prev, data as Candidate]);
     });
 
     wsService.on('GENERATOR_STARTED', () => {
